@@ -1,48 +1,45 @@
-include "./vendor/premake/premake_customization/solution_items.lua"
-include "Dependencies.lua"
+project "ImGui"
+	kind "staticLib"
+	language "C++"
+    staticruntime "on"
 
-workspace "Hazel"
-	architecture "x86_64"
-	startproject "Hazelnut"
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+    defines { "IMGUI_API=__declspec(dllexport)" }
 
-	configurations
+	files
 	{
-		"Debug",
-		"Release",
-		"Dist"
+		"imconfig.h",
+		"imgui.h",
+		"imgui.cpp",
+		"imgui_draw.cpp",
+		"imgui_internal.h",
+		"imgui_tables.cpp",
+		"imgui_widgets.cpp",
+		"imstb_rectpack.h",
+		"imstb_textedit.h",
+		"imstb_truetype.h",
+		"imgui_demo.cpp"
 	}
 
-	solution_items
-	{
-		".editorconfig"
-	}
+	filter "system:windows"
+		systemversion "latest"
+		cppdialect "C++17"
 
-	flags
-	{
-		"MultiProcessorCompile"
-	}
+	filter "system:linux"
+		pic "On"
+		systemversion "latest"
+		cppdialect "C++17"
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+	filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
 
-group "Dependencies"
-	include "vendor/premake"
-	include "Hazel/vendor/Box2D"
-	include "Hazel/vendor/GLFW"
-	include "Hazel/vendor/Glad"
-	include "Hazel/vendor/msdf-atlas-gen"
-	include "Hazel/vendor/imgui"
-	include "Hazel/vendor/yaml-cpp"
-group ""
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "on"
 
-group "Core"
-	include "Hazel"
-	include "Hazel-ScriptCore"
-group ""
-
-group "Tools"
-	include "Hazelnut"
-group ""
-
-group "Misc"
-	include "Sandbox"
-group ""
+    filter "configurations:Dist"
+		runtime "Release"
+		optimize "on"
+        symbols "off"
